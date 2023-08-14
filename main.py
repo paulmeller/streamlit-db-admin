@@ -3,6 +3,7 @@ import pandas as pd
 import sqlalchemy as db
 from sqlalchemy import inspect, text, and_, func, select
 from sqlalchemy.pool import QueuePool
+from sqlalchemy.exc import OperationalError
 import os, logging, json
 
 # Configure Logging
@@ -36,15 +37,6 @@ def validate_db_env_vars():
       f"Missing required environment variables: {', '.join(missing_vars)}. Please set them and restart the app."
     )
     st.stop()
-
-
-validate_db_env_vars()
-
-# Connect to your SQL database with connection pooling
-engine = db.create_engine(connection_string, poolclass=QueuePool)
-connection = engine.connect()
-metadata = db.MetaData()
-inspector = inspect(engine)
 
 
 # Cache schema names to reduce repeated DB queries
@@ -183,8 +175,29 @@ def export_db_json(schema_name):
   st.write(f"JSON export for {schema_name}:", json.dumps(db_json, indent=2))
 
 
+validate_db_env_vars()
+
 # Streamlit app interface
-st.title("Streamlit DB Admin")
+st.title("StreamlitDBAdmin")
+
+# Connect to your SQL database with connection pooling
+engine = db.create_engine(connection_string, poolclass=QueuePool)
+try:
+  connection = engine.connect()
+except OperationalError as e:
+  if "FATAL:  password authentication failed" in str(e):
+    st.error("Password authentication failed, please check your credentials.")
+    logger.exception(e)
+    # Optionally, you could add logic here to prompt the user for new credentials or take other appropriate action.
+  else:
+    st.error("An unexpected error occurred while connecting to the database.")
+    logger.exception(e)
+
+  st.stop()
+
+metadata = db.MetaData()
+inspector = inspect(engine)
+
 st.sidebar.title("Settings")
 
 # Utilize st.session_state to maintain selected schema and table across interactions
