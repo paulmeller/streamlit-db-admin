@@ -51,7 +51,10 @@ inspector = inspect(engine)
 @st.cache_data(ttl=None)
 def get_schema_names() -> list:
   try:
-    query = text("SELECT schema_name FROM information_schema.schemata;")
+    # Exclude system schemas
+    query = text(
+      "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public');"
+    )
     ResultProxy = connection.execute(query)
     return [row[0] for row in ResultProxy.fetchall()]
   except db.exc.DatabaseError as e:
@@ -69,7 +72,10 @@ def get_schema_names() -> list:
 def get_table_names(schema_name: str) -> list:
   try:
     metadata.clear()  # Clear existing metadata to avoid redundancy
-    metadata.reflect(bind=engine, schema=schema_name)  # Reflect schema
+
+    # Reflect only the specified user-defined schema
+    metadata.reflect(bind=engine, schema=schema_name)
+
     table_names = [
       table_name.split('.')[1] for table_name in metadata.tables.keys()
       if table_name.startswith(schema_name + '.')
