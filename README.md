@@ -1,6 +1,6 @@
-# Streamlit DB Admin
+# StreamlitD Admin
 
-Streamlit DB Admin provides an interactive and user-friendly interface to manage and interact with various databases. Easily view, edit, and manage your database schemas and tables right from the web interface.
+StreamlitDBAdmin provides an interactive and user-friendly interface to manage and interact with various databases. Easily view, edit, and manage your database schemas and tables right from the web interface.
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@ Streamlit DB Admin provides an interactive and user-friendly interface to manage
 
 ## Installation
 
-To install the Streamlit Database Administration Tool, follow the steps below:
+To install StreamlitDBAdmin, follow the steps below:
 
 ```bash
 # Clone the repository
@@ -58,4 +58,4 @@ Contributions are welcome! Please read our Contributing Guide for more informati
 
 ## License
 
-Streamlit Database Administration Tool is licensed under the MIT License. See the LICENSE file for more details.
+StreamlitDBAdmin is licensed under the MIT License. See the LICENSE file for more details.
